@@ -1,7 +1,7 @@
 # Poverty in Space — Atlas
 
 A static web atlas of **building-based predictions** of wealth, poverty and inequality at
-**~5 km resolution across ~49 countries** (Africa + Bangladesh), from **Google Open Buildings**
+**~5 km resolution across 52 countries** (Africa + Bangladesh), from **Google Open Buildings**
 footprints alone. Every map shows the country border (ADM0).
 
 Each location is a resolution-7 H3 hexagon (~5 km). Seven building-footprint features per hexagon
@@ -11,19 +11,29 @@ countries.
 
 ## Indicators (7)
 
-| Indicator | Definition | CV score |
-|---|---|---|
-| Wealth | median IWI (0–100) | R² 0.60 |
-| Poverty rate | % households IWI < 35 | R² 0.57 |
-| Extreme poverty | % households IWI < 20 | R² 0.29 |
-| Inequality (CV) | within-hex CV of IWI | R² 0.42 |
-| Gini | within-hex Gini of IWI | R² 0.41 |
-| Poverty (prob.) | P(median IWI < 35) | AUC 0.88 |
-| High inequality (prob.) | P(CV > 0.40) | AUC 0.76 |
+| Indicator | Type | Definition | CV score |
+|---|---|---|---|
+| Wealth | continuous | median IWI (0–100) | R² 0.60 |
+| Poverty rate | continuous | % households IWI < 35 | R² 0.57 |
+| Extreme poverty | continuous | % households IWI < 20 | R² 0.29 |
+| Inequality (CV) | continuous | within-hex CV of IWI | R² 0.42 |
+| Gini | continuous | within-hex Gini of IWI | R² 0.41 |
+| Poor (yes/no) | dummy | 1 if median IWI < 35, else 0 | acc 0.81 |
+| High inequality (yes/no) | dummy | 1 if CV > 0.40, else 0 | acc 0.82 |
+
+The last two are **hard yes/no dummies (class 0/1)** — the model predicts *poor / not-poor* and
+*high-inequality / not*, not a probability. They render as two-colour maps (grey = no, colour = yes).
 
 **Coverage toggle:** *Screened* = hexes with ≥10 buildings (the model's training floor, where
 footprint-shape features are stable); *All buildings* = every populated hex (noisier). Colours use one
 fixed scale per indicator across all countries.
+
+**Period selector.** The default view is the static **v3** atlas (2023, Google v3, 52 countries). A
+**Period** control also offers **2016** and **2023** from the **Google Open Buildings 2.5D temporal
+panel** for 12 countries with a building time series (BFA, BGD, CIV, CMR, GHA, GIN, KEN, LSO, MDG, MOZ,
+MWI, SEN). The 2.5D product has no footprint-size features, so those models are retrained on count /
+density / built-up fraction / building height and are slightly less accurate (wealth R²=0.50 vs 0.60);
+scales are fixed across both years so 2016 vs 2023 is directly comparable.
 
 Predictions are model estimates, not official statistics — most reliable in Sub-Saharan Africa; North
 Africa and small islands are extrapolations; extreme poverty (a rare tail) is the least accurate.
@@ -64,7 +74,9 @@ python scripts/build_maps.py KEN NGA    # quick test on a subset
 ```
 
 Model pipeline (research repo, `task8_demand_trap`): `extract_labels_extra.py` (DHS labels) →
-`train_all_outcomes.py` (7 models) → `predict_all_outcomes.py` → `build_maps.py`.
+`train_all_outcomes.py` (7 models) → `predict_all_outcomes.py` → `build_maps.py`. The 2016/2023 temporal
+panel is incorporated separately by `scripts/add_temporal.py` (re-run it after any `build_maps.py`
+rebuild, which otherwise drops the temporal block from the manifest).
 
 ## Publish updates
 
