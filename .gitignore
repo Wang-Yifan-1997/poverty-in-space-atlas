@@ -1,0 +1,15 @@
+# OS / editor junk
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Source prediction CSVs are large and live on the research drive — do NOT commit.
+# The atlas ships only the rendered figures (figures/) and the manifest (data/).
+*.csv
+!data/countries.json
