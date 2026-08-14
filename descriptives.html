@@ -73,8 +73,9 @@
     </ul>
     <p class="note">Density = arcsinh(buildings / km²) at H3 resolution 7 (~5 km). <strong>Heatmaps</strong> use
       within-country <strong>decile ranks</strong> on both axes (1 = lowest 10%, 10 = highest), so each panel runs
-      rank 1→10 regardless of the country's absolute density; cell colour is the number of hexes
-      (<strong>darker = more</strong>), and a dark diagonal means rank tends to stay put.</p>
+      rank 1→10 regardless of the country's absolute density. Each column is normalised to sum to 100%, so cell
+      colour is the <strong>share</strong> P(y-rank | x-rank) — <strong>darker = larger share</strong> — and a dark
+      diagonal means rank tends to stay put.</p>
   </div>
 </section>
 

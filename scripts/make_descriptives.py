@@ -5,7 +5,7 @@ r"""Descriptives subpage figures: per country × dataset. ONE panel per PNG (no 
   wealth        : predicted-IWI histogram
   spatial_scatter / spatial_heat   : own vs neighbours' asinh density (scatter | rank–rank decile heatmap)
   temporal_scatter / temporal_heat : asinh density 2016 vs 2023 (scatter | rank–rank decile heatmap) [2.5D panel, 12 countries]
-  heatmap axes are within-country decile ranks (1 low → 10 high); colour = # hexes (darker = more).
+  heatmap axes are within-country decile ranks (1 low → 10 high); colour = column-normalised share P(y|x) (darker = larger).
 
 Density = arcsinh(count/area); neighbour = H3 ring-1 mean.
 Datasets: v3 (hex_predictions_all_outcomes.csv, 52 countries) + 2.5D 2016/2023 (atlas_temporal, 12).
@@ -15,6 +15,7 @@ import os, sys, json, importlib.util, warnings
 import numpy as np, pandas as pd, h3
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
+from matplotlib.ticker import PercentFormatter
 warnings.filterwarnings("ignore")
 try: sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 except Exception: pass
@@ -45,57 +46,59 @@ def neighbour_mean(h3arr, val):
 def fig_density(dens, name, out, mode):
     if mode=="asinh":
         v=np.arcsinh(dens); col=TEAL
-        title=f"asinh(density) — zeros kept  ({(dens==0).mean()*100:.0f}% of hexes are zero)"
+        stat=f"{(dens==0).mean()*100:.0f}% of hexes are empty (zero buildings)"
         xl="asinh( buildings / km² )"
     else:
         v=np.log(dens[dens>0]); col=TEAL2
-        title=f"log(density) — zeros dropped  (n={len(v):,})"
+        stat=f"n = {len(v):,} hexes with ≥1 building"
         xl="log( buildings / km² )"
     fig,a=plt.subplots(figsize=(6.6,4.7))
     a.hist(v,bins=60,color=col,alpha=.9)
-    a.set_xlabel(xl); a.set_ylabel("# hexes"); a.set_title(title,fontsize=10.5)
-    fig.suptitle(f"{name} — building density",fontweight="bold",fontsize=13); fig.tight_layout(rect=[0,0,1,.95])
-    fig.savefig(out,dpi=130,bbox_inches="tight"); plt.close(fig)
+    a.set_xlabel(xl); a.set_ylabel("# hexes")
+    a.text(0.02,0.97,stat,transform=a.transAxes,ha="left",va="top",fontsize=9,color="#4a5a63")
+    fig.tight_layout(); fig.savefig(out,dpi=130,bbox_inches="tight"); plt.close(fig)
 
 def fig_wealth(w, name, out):
     w=w[~np.isnan(w)]
     fig,a=plt.subplots(figsize=(6.6,4.7))
     a.hist(w,bins=60,color=GREEN,alpha=.9)
     a.axvline(35,color=MAROON,ls="--",lw=1.5,label="poverty line (IWI 35)")
-    a.set_xlabel("predicted wealth (IWI, 0–100)"); a.set_ylabel("# hexes"); a.legend(fontsize=9)
-    a.set_title(f"mean {w.mean():.1f} · median {np.median(w):.1f} · {(w<35).mean()*100:.0f}% below 35",fontsize=10.5)
-    fig.suptitle(f"{name} — wealth distribution",fontweight="bold",fontsize=13); fig.tight_layout(rect=[0,0,1,.95])
-    fig.savefig(out,dpi=130,bbox_inches="tight"); plt.close(fig)
+    a.set_xlabel("predicted wealth (IWI, 0–100)"); a.set_ylabel("# hexes"); a.legend(fontsize=9,loc="upper left")
+    a.text(0.98,0.97,f"mean {w.mean():.1f} · median {np.median(w):.1f}\n{(w<35).mean()*100:.0f}% below 35",
+           transform=a.transAxes,ha="right",va="top",fontsize=9,color="#4a5a63")
+    fig.tight_layout(); fig.savefig(out,dpi=130,bbox_inches="tight"); plt.close(fig)
 
 def fig_scatter(x, y, xlab, ylab, name, sub, out, dotcol):
     m=~(np.isnan(x)|np.isnan(y)); x=x[m]; y=y[m]; n=len(x)
     b=np.polyfit(x,y,1); r=np.corrcoef(x,y)[0,1]
     fig,a=plt.subplots(figsize=(6.6,4.8))
-    rs=np.random.RandomState(1); sel=rs.choice(n,min(8000,n),replace=False)
+    rs=np.random.RandomState(1); sel=rs.choice(n,min(8000,n),replace=False)   # thin the dots for legibility; fit uses all hexes
     a.scatter(x[sel],y[sel],s=5,alpha=.12,c=dotcol,linewidths=0)
     lo=min(x.min(),y.min()); hi=max(x.max(),y.max()); xs=np.linspace(x.min(),x.max(),40)
     a.plot(xs,np.polyval(b,xs),color=MAROON,lw=2,label=f"slope {b[0]:.2f} · R²={r**2:.2f}")
     a.plot([lo,hi],[lo,hi],"--",c="#999",lw=1); a.set_xlabel(xlab); a.set_ylabel(ylab)
     a.legend(fontsize=9,loc="upper left")
-    fig.suptitle(f"{name} — {sub} · scatter (8k sample)",fontweight="bold",fontsize=12.5); fig.tight_layout(rect=[0,0,1,.95])
-    fig.savefig(out,dpi=130,bbox_inches="tight"); plt.close(fig)
+    fig.tight_layout(); fig.savefig(out,dpi=130,bbox_inches="tight"); plt.close(fig)
 
 def fig_heat(x, y, xlab, ylab, name, sub, out):
-    """Rank–rank heatmap: within-country decile RANK (1 low → 10 high) on both axes; darker = more hexes."""
+    """Rank–rank heatmap: within-country decile RANK (1 low → 10 high) on both axes.
+    Colour = column-normalised share P(y-rank | x-rank), 0→100% (darker = larger share)."""
+    xlab=xlab.replace("asinh ",""); ylab=ylab.replace("asinh ","")    # ranks, not levels → drop "asinh"
     m=~(np.isnan(x)|np.isnan(y)); x=x[m]; y=y[m]
     rx=pd.qcut(pd.Series(x).rank(method="first"),10,labels=False)+1   # equal-count deciles, 1..10
     ry=pd.qcut(pd.Series(y).rank(method="first"),10,labels=False)+1
     edges=np.arange(0.5,11.5)
-    H,_,_=np.histogram2d(rx,ry,bins=[edges,edges])
+    H,_,_=np.histogram2d(rx,ry,bins=[edges,edges])                   # H[x, y]
+    Hn=H/H.sum(axis=1,keepdims=True).clip(1)                         # P(y | x): each x-column sums to 1
     fig,a=plt.subplots(figsize=(6.6,4.8))
-    im=a.imshow(H.T,origin="lower",aspect="auto",extent=[0.5,10.5,0.5,10.5],
-                cmap=WTL,vmin=0,vmax=H.max())                        # white=0 -> dark teal=max
+    im=a.imshow(Hn.T,origin="lower",aspect="auto",extent=[0.5,10.5,0.5,10.5],
+                cmap=WTL,vmin=0,vmax=1)                              # white=0% -> dark teal=100%
     a.plot([0.5,10.5],[0.5,10.5],"--",c=MAROON,lw=1.1,alpha=.85)
     a.set_xticks(range(1,11)); a.set_yticks(range(1,11)); a.tick_params(labelsize=8)
     a.set_xlabel(f"{xlab} — decile rank (1 low → 10 high)"); a.set_ylabel(f"{ylab} — decile rank")
-    cb=fig.colorbar(im,ax=a,shrink=.85); cb.set_label("# hexes  (darker = more)",fontsize=9)
-    fig.suptitle(f"{name} — {sub} · rank–rank heatmap",fontweight="bold",fontsize=12.5); fig.tight_layout(rect=[0,0,1,.95])
-    fig.savefig(out,dpi=130,bbox_inches="tight"); plt.close(fig)
+    cb=fig.colorbar(im,ax=a,shrink=.85,format=PercentFormatter(1.0,decimals=0))
+    cb.set_label("share of each column  P(y | x)   (darker = larger)",fontsize=9)
+    fig.tight_layout(); fig.savefig(out,dpi=130,bbox_inches="tight"); plt.close(fig)
 
 # ---- generators -----------------------------------------------------------
 def gen_snapshot(dataset, only, avail):
