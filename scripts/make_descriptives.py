@@ -3,8 +3,9 @@ r"""Descriptives subpage figures: per country × dataset. ONE panel per PNG (no 
   density_asinh : asinh(building density) histogram [zeros kept]
   density_log   : log(building density) histogram   [zeros dropped]
   wealth        : predicted-IWI histogram
-  spatial_scatter / spatial_heat   : own vs neighbours' asinh density (scatter | 10×10 heatmap)
-  temporal_scatter / temporal_heat : asinh density 2016 vs 2023 (scatter | 10×10 heatmap) [2.5D panel, 12 countries]
+  spatial_scatter / spatial_heat   : own vs neighbours' asinh density (scatter | rank–rank decile heatmap)
+  temporal_scatter / temporal_heat : asinh density 2016 vs 2023 (scatter | rank–rank decile heatmap) [2.5D panel, 12 countries]
+  heatmap axes are within-country decile ranks (1 low → 10 high); colour = # hexes (darker = more).
 
 Density = arcsinh(count/area); neighbour = H3 ring-1 mean.
 Datasets: v3 (hex_predictions_all_outcomes.csv, 52 countries) + 2.5D 2016/2023 (atlas_temporal, 12).
@@ -13,7 +14,7 @@ Writes data/descriptives.json + assets/descriptives_manifest.js. Optional argv =
 import os, sys, json, importlib.util, warnings
 import numpy as np, pandas as pd, h3
 import matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
-from matplotlib.colors import LogNorm
+from matplotlib.colors import LinearSegmentedColormap
 warnings.filterwarnings("ignore")
 try: sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 except Exception: pass
@@ -29,6 +30,7 @@ try: AREA7=h3.average_hexagon_area(7,"km^2")
 except Exception: AREA7=5.1613
 TEMP_ISOS=["BFA","BGD","CIV","CMR","GHA","GIN","KEN","LSO","MDG","MOZ","MWI","SEN"]
 TEAL="#2b6777"; TEAL2="#6a51a3"; MAROON="#a3282b"; NAVY="#26456e"; GREEN="#1a7a3a"
+WTL=LinearSegmentedColormap.from_list("wtl",["#ffffff","#cfe8e2","#5ba99d","#14625b","#08302b"])  # white(low) -> dark teal(high)
 
 def ensure(*p): d=os.path.join(FIGD,*p); os.makedirs(d,exist_ok=True); return d
 
@@ -79,15 +81,20 @@ def fig_scatter(x, y, xlab, ylab, name, sub, out, dotcol):
     fig.savefig(out,dpi=130,bbox_inches="tight"); plt.close(fig)
 
 def fig_heat(x, y, xlab, ylab, name, sub, out):
+    """Rank–rank heatmap: within-country decile RANK (1 low → 10 high) on both axes; darker = more hexes."""
     m=~(np.isnan(x)|np.isnan(y)); x=x[m]; y=y[m]
+    rx=pd.qcut(pd.Series(x).rank(method="first"),10,labels=False)+1   # equal-count deciles, 1..10
+    ry=pd.qcut(pd.Series(y).rank(method="first"),10,labels=False)+1
+    edges=np.arange(0.5,11.5)
+    H,_,_=np.histogram2d(rx,ry,bins=[edges,edges])
     fig,a=plt.subplots(figsize=(6.6,4.8))
-    H,xe,ye=np.histogram2d(x,y,bins=10)
-    im=a.imshow(H.T,origin="lower",aspect="auto",extent=[xe[0],xe[-1],ye[0],ye[-1]],
-                cmap="magma",norm=LogNorm(vmin=1,vmax=max(H.max(),2)))
-    a.plot([xe[0],xe[-1]],[xe[0],xe[-1]],"--",c="#fff",lw=1,alpha=.6)
-    a.set_xlabel(xlab); a.set_ylabel(ylab)
-    cb=fig.colorbar(im,ax=a,shrink=.85); cb.set_label("# hexes",fontsize=9)
-    fig.suptitle(f"{name} — {sub} · 10×10 bins (hex count)",fontweight="bold",fontsize=12.5); fig.tight_layout(rect=[0,0,1,.95])
+    im=a.imshow(H.T,origin="lower",aspect="auto",extent=[0.5,10.5,0.5,10.5],
+                cmap=WTL,vmin=0,vmax=H.max())                        # white=0 -> dark teal=max
+    a.plot([0.5,10.5],[0.5,10.5],"--",c=MAROON,lw=1.1,alpha=.85)
+    a.set_xticks(range(1,11)); a.set_yticks(range(1,11)); a.tick_params(labelsize=8)
+    a.set_xlabel(f"{xlab} — decile rank (1 low → 10 high)"); a.set_ylabel(f"{ylab} — decile rank")
+    cb=fig.colorbar(im,ax=a,shrink=.85); cb.set_label("# hexes  (darker = more)",fontsize=9)
+    fig.suptitle(f"{name} — {sub} · rank–rank heatmap",fontweight="bold",fontsize=12.5); fig.tight_layout(rect=[0,0,1,.95])
     fig.savefig(out,dpi=130,bbox_inches="tight"); plt.close(fig)
 
 # ---- generators -----------------------------------------------------------
