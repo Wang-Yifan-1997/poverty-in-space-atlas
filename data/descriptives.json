@@ -15,32 +15,51 @@
   ],
   "tabs": [
     {
-      "key": "density_asinh",
-      "label": "Density (asinh)"
-    },
-    {
-      "key": "density_log",
-      "label": "Density (log)"
+      "key": "density",
+      "label": "Building density",
+      "subs": [
+        {
+          "key": "asinh",
+          "label": "asinh · zeros kept"
+        },
+        {
+          "key": "log",
+          "label": "log · zeros dropped"
+        }
+      ]
     },
     {
       "key": "wealth",
       "label": "Wealth"
     },
     {
-      "key": "spatial_scatter",
-      "label": "Spatial · scatter"
+      "key": "spatial",
+      "label": "Spatial persistence",
+      "subs": [
+        {
+          "key": "scatter",
+          "label": "scatter"
+        },
+        {
+          "key": "heat",
+          "label": "heatmap"
+        }
+      ]
     },
     {
-      "key": "spatial_heat",
-      "label": "Spatial · heatmap"
-    },
-    {
-      "key": "temporal_scatter",
-      "label": "Temporal · scatter"
-    },
-    {
-      "key": "temporal_heat",
-      "label": "Temporal · heatmap"
+      "key": "temporal",
+      "label": "Temporal persistence",
+      "temporal": true,
+      "subs": [
+        {
+          "key": "scatter",
+          "label": "scatter"
+        },
+        {
+          "key": "heat",
+          "label": "heatmap"
+        }
+      ]
     }
   ],
   "regions": [

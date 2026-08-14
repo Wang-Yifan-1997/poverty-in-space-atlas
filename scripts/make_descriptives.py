@@ -146,13 +146,18 @@ def main():
     REG_ORDER=["North Africa","West Africa","Central Africa","East Africa","Southern Africa","South Asia"]
     countries=sorted(avail.values(), key=lambda r:(REG_ORDER.index(r["region"]) if r["region"] in REG_ORDER else 9, r["name"]))
     meta={"datasets":[{"key":"v3","label":"Google v3 (2023)"},{"key":"2016","label":"2.5D 2016"},{"key":"2023","label":"2.5D 2023"}],
-          "tabs":[{"key":"density_asinh","label":"Density (asinh)"},
-                  {"key":"density_log","label":"Density (log)"},
+          # Two-level tabs: primary variable, with optional sub-views. Folder = key or key_sub
+          # (density_asinh, density_log, spatial_scatter, spatial_heat, temporal_scatter, temporal_heat, wealth).
+          "tabs":[{"key":"density","label":"Building density","subs":[
+                      {"key":"asinh","label":"asinh · zeros kept"},
+                      {"key":"log","label":"log · zeros dropped"}]},
                   {"key":"wealth","label":"Wealth"},
-                  {"key":"spatial_scatter","label":"Spatial · scatter"},
-                  {"key":"spatial_heat","label":"Spatial · heatmap"},
-                  {"key":"temporal_scatter","label":"Temporal · scatter"},
-                  {"key":"temporal_heat","label":"Temporal · heatmap"}],
+                  {"key":"spatial","label":"Spatial persistence","subs":[
+                      {"key":"scatter","label":"scatter"},
+                      {"key":"heat","label":"heatmap"}]},
+                  {"key":"temporal","label":"Temporal persistence","temporal":True,"subs":[
+                      {"key":"scatter","label":"scatter"},
+                      {"key":"heat","label":"heatmap"}]}],
           "regions":REG_ORDER,"countries":countries}
     os.makedirs(os.path.join(ATLAS,"data"),exist_ok=True)
     json.dump(meta,open(os.path.join(ATLAS,"data","descriptives.json"),"w",encoding="utf-8"),ensure_ascii=False,indent=2)
