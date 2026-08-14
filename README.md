@@ -50,12 +50,11 @@ Africa and small islands are extrapolations; extreme poverty (a rare tail) is th
 ## Repository layout
 
 Pages: **Atlas** (`index.html`, the maps) · **Descriptives** (`descriptives.html`, per-country
-distributions & persistence explorer) · **Over time** (`dynamics.html`, narrative essay).
+distributions & persistence explorer).
 
 ```
 index.html                                  # atlas — the maps (no build step)
 descriptives.html                           # per-country distributions & persistence explorer
-dynamics.html                               # "Over time" narrative essay
 assets/{style.css, app.js, manifest.js}     # manifest.js = window.ATLAS (generated)
 assets/{descriptives_app.js, descriptives_manifest.js}   # the descriptives explorer
 figures/
