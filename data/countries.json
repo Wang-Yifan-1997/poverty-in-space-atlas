@@ -92,6 +92,32 @@
       ],
       "no": "#e4e7e7",
       "yes": "#d94801"
+    },
+    {
+      "key": "bld_density",
+      "label": "Building density",
+      "sub": "buildings / km² (log)",
+      "kind": "reg",
+      "low": "sparse",
+      "high": "dense",
+      "scale": [
+        1.94,
+        603.5
+      ],
+      "grad": "#440154,#482878,#3e4989,#31688e,#26828e,#1f9e89,#35b779,#6ece58,#b5de2b,#fde725"
+    },
+    {
+      "key": "bld_decile",
+      "label": "Density decile",
+      "sub": "within-country rank 1–10",
+      "kind": "reg",
+      "low": "1 (sparsest)",
+      "high": "10 (densest)",
+      "scale": [
+        1,
+        10
+      ],
+      "grad": "#440154,#482878,#3e4989,#31688e,#26828e,#1f9e89,#35b779,#6ece58,#b5de2b,#fde725"
     }
   ],
   "screenings": [
@@ -1020,6 +1046,14 @@
       "inequality_dummy": [
         0.0,
         1.0
+      ],
+      "bld_density": [
+        2.28,
+        753.1
+      ],
+      "bld_decile": [
+        1,
+        10
       ]
     },
     "countries": [

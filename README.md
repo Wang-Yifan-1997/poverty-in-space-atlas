@@ -9,7 +9,7 @@ Each location is a resolution-7 H3 hexagon (~5 km). Seven building-footprint fea
 **buildings-only gradient-boosted models** trained on 7,442 DHS survey clusters across 12 African
 countries.
 
-## Indicators (7)
+## Indicators (7 predicted + 2 building-density layers)
 
 | Indicator | Type | Definition | CV score |
 |---|---|---|---|
@@ -20,6 +20,11 @@ countries.
 | Gini | continuous | within-hex Gini of IWI | R² 0.41 |
 | Poor (yes/no) | dummy | 1 if median IWI < 35, else 0 | acc 0.81 |
 | High inequality (yes/no) | dummy | 1 if CV > 0.40, else 0 | acc 0.82 |
+| Building density | data layer | buildings / km² (log, scale shared across countries) | — |
+| Density decile | data layer | within-country building-density rank 1–10 | — |
+
+The last two are **the raw building input, not model predictions** — reference layers so you can see the
+footprint density (and its within-country rank) behind every wealth map. They exist for all three datasets.
 
 The last two are **hard yes/no dummies (class 0/1)** — the model predicts *poor / not-poor* and
 *high-inequality / not*, not a probability. They render as two-colour maps (grey = no, colour = yes).
@@ -56,7 +61,8 @@ scripts/build_maps.py                       # regenerates every figure + manifes
 ```
 
 `{screening}` ∈ `screened`, `all`. `{outcome}` ∈ `wealth`, `poverty_rate`, `extreme_rate`,
-`inequality_cv`, `gini`, `poverty_dummy`, `inequality_dummy`. `{ISO}` = ISO 3166-1 alpha-3.
+`inequality_cv`, `gini`, `poverty_dummy`, `inequality_dummy`, `bld_density`, `bld_decile`.
+`{ISO}` = ISO 3166-1 alpha-3. The two `bld_*` layers are added by `scripts/make_density_layers.py`.
 
 ## View locally
 
