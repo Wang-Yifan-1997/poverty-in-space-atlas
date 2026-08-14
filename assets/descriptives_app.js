@@ -5,8 +5,8 @@
   if (!D) { document.getElementById("grid").innerHTML =
     "<p>Could not load manifest. Run <code>scripts/make_descriptives.py</code>.</p>"; return; }
 
-  var state = { dataset: "v3", tab: "density", region: "all" };
-  function tabIsTemporal(){ return state.tab === "temporal"; }
+  var state = { dataset: "v3", tab: "density_asinh", region: "all" };
+  function tabIsTemporal(){ return state.tab.indexOf("temporal") === 0; }
 
   // ---- dataset seg ----
   var dsWrap = document.getElementById("dataset");
@@ -44,7 +44,7 @@
 
   function has(c){ return tabIsTemporal() ? c.temporal : c.datasets.indexOf(state.dataset) > -1; }
   function figPath(iso){
-    return tabIsTemporal() ? "figures/descriptives/temporal/" + iso + ".png"
+    return tabIsTemporal() ? "figures/descriptives/" + state.tab + "/" + iso + ".png"
                            : "figures/descriptives/" + state.tab + "/" + state.dataset + "/" + iso + ".png";
   }
   function dsLabel(k){ var d=D.datasets.filter(function(x){return x.key===k;})[0]; return d?d.label:k; }

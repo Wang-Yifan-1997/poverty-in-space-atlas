@@ -56,18 +56,21 @@
 <section class="section alt" id="about">
   <div class="wrap narrow">
     <h2>About these figures</h2>
+    <p>Every tab is a <strong>single figure</strong>, shown for every country at once. Views that used to combine
+      panels are now split into their own tabs so each picture carries one idea.</p>
     <ul class="method-list">
-      <li><strong>Building density</strong> — histograms of density under two transforms: <em>asinh</em> keeps
-        zero-building hexes; <em>log</em> drops them. (Google v3 contains only built hexes, so it has no zeros;
-        the 2.5D grid does, so the two histograms differ there.)</li>
+      <li><strong>Density (asinh)</strong> — histogram of density under <em>asinh</em>, which keeps
+        zero-building hexes (so the empty-vs-settled split is visible).</li>
+      <li><strong>Density (log)</strong> — the same density under <em>log</em>, which drops zeros. (Google v3
+        contains only built hexes, so it has none; the 2.5D grid does, so the two histograms differ there.)</li>
       <li><strong>Wealth</strong> — distribution of predicted IWI, with the poverty line (IWI 35) marked.</li>
-      <li><strong>Spatial persistence</strong> — own asinh density vs the mean of its 6 H3 neighbours; a tight
-        diagonal = strong spatial autocorrelation.</li>
-      <li><strong>Temporal persistence</strong> — asinh density in 2016 vs 2023 (2.5D panel, 12 countries); the
-        slope is an AR(1) persistence coefficient.</li>
+      <li><strong>Spatial · scatter / heatmap</strong> — own asinh density vs the mean of its 6 H3 neighbours,
+        as a raw 8k-hex scatter and as a 10×10 binned count heatmap; a tight diagonal = strong spatial
+        autocorrelation.</li>
+      <li><strong>Temporal · scatter / heatmap</strong> — asinh density in 2016 vs 2023 (2.5D panel, 12
+        countries); the scatter's slope is an AR(1) persistence coefficient, the heatmap its binned density.</li>
     </ul>
-    <p class="note">Each persistence view shows the raw scatter (8k-hex sample) beside a 10×10 binned count
-      heatmap of the same relationship. Density = arcsinh(buildings / km²) at H3 resolution 7 (~5 km).</p>
+    <p class="note">Density = arcsinh(buildings / km²) at H3 resolution 7 (~5 km).</p>
   </div>
 </section>
 

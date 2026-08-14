@@ -15,20 +15,32 @@
   ],
   "tabs": [
     {
-      "key": "density",
-      "label": "Building density"
+      "key": "density_asinh",
+      "label": "Density (asinh)"
+    },
+    {
+      "key": "density_log",
+      "label": "Density (log)"
     },
     {
       "key": "wealth",
       "label": "Wealth"
     },
     {
-      "key": "spatial",
-      "label": "Spatial persistence"
+      "key": "spatial_scatter",
+      "label": "Spatial · scatter"
     },
     {
-      "key": "temporal",
-      "label": "Temporal persistence"
+      "key": "spatial_heat",
+      "label": "Spatial · heatmap"
+    },
+    {
+      "key": "temporal_scatter",
+      "label": "Temporal · scatter"
+    },
+    {
+      "key": "temporal_heat",
+      "label": "Temporal · heatmap"
     }
   ],
   "regions": [
