@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Poverty in Space — Descriptives</title>
+  <meta name="description" content="Per-country distributions and persistence of building density and wealth, from Google Open Buildings.">
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="index.html">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+        <circle cx="16" cy="16" r="15" fill="none" stroke="currentColor" stroke-width="1.4"/>
+        <path d="M16 1 C8 8 8 24 16 31 M16 1 C24 8 24 24 16 31 M1 16 H31 M4 8 H28 M4 24 H28" fill="none" stroke="currentColor" stroke-width="1"/>
+        <circle cx="16" cy="16" r="2.4" fill="currentColor"/>
+      </svg>
+      <span>Poverty&nbsp;in&nbsp;Space <em>Descriptives</em></span>
+    </a>
+    <nav class="site-nav">
+      <a href="index.html">Atlas</a>
+      <a href="descriptives.html" aria-current="page">Descriptives</a>
+      <a href="dynamics.html">Over&nbsp;time</a>
+      <a href="index.html#methodology">Methodology</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero" id="top">
+  <div class="wrap">
+    <h1>Descriptives</h1>
+    <p class="lede">
+      For each country and dataset: the <strong>distribution</strong> of building density and wealth, and how
+      density <strong>persists</strong> across neighbours (space) and over time (2016 → 2023).
+    </p>
+  </div>
+</section>
+
+<main class="wrap" id="explore">
+  <div class="controls">
+    <div class="control-row">
+      <label class="ctl-label" for="country">Country</label>
+      <select id="country" class="select"></select>
+      <label class="ctl-label">Dataset</label>
+      <div class="seg" id="dataset" role="group" aria-label="Dataset"></div>
+    </div>
+    <div class="outcome-tabs" id="desc-tabs" role="tablist" aria-label="View"></div>
+    <p class="period-note" id="desc-note" hidden></p>
+  </div>
+
+  <figure class="desc-figure">
+    <img id="desc-img" alt="">
+    <p class="desc-unavailable" id="desc-unavailable" hidden></p>
+    <figcaption class="desc-cap" id="desc-cap"></figcaption>
+    <a id="desc-dl" class="btn" download hidden>Download figure (PNG)</a>
+  </figure>
+</main>
+
+<section class="section alt" id="about">
+  <div class="wrap narrow">
+    <h2>About these figures</h2>
+    <ul class="method-list">
+      <li><strong>Building density</strong> — histograms of density under two transforms: <em>asinh</em> keeps
+        zero-building hexes; <em>log</em> drops them. (Google v3 contains only built hexes, so it has no zeros;
+        the 2.5D grid does, so the two histograms differ there.)</li>
+      <li><strong>Wealth</strong> — distribution of predicted IWI, with the poverty line (IWI 35) marked.</li>
+      <li><strong>Spatial persistence</strong> — own asinh density vs the mean of its 6 H3 neighbours; a tight
+        diagonal = strong spatial autocorrelation.</li>
+      <li><strong>Temporal persistence</strong> — asinh density in 2016 vs 2023 (2.5D panel, 12 countries); the
+        slope is an AR(1) persistence coefficient.</li>
+    </ul>
+    <p class="note">Each persistence view shows the raw scatter (8k-hex sample) beside a 10×10 binned count
+      heatmap of the same relationship. Density = arcsinh(buildings / km²) at H3 resolution 7 (~5 km).</p>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span>Poverty in Space — Descriptives</span>
+    <span class="muted">Google Open Buildings · H3 res-7 · asinh building density</span>
+  </div>
+</footer>
+
+<script src="assets/descriptives_manifest.js"></script>
+<script src="assets/descriptives_app.js"></script>
+</body>
+</html>

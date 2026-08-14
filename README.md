@@ -49,15 +49,23 @@ Africa and small islands are extrapolations; extreme poverty (a rare tail) is th
 
 ## Repository layout
 
+Pages: **Atlas** (`index.html`, the maps) · **Descriptives** (`descriptives.html`, per-country
+distributions & persistence explorer) · **Over time** (`dynamics.html`, narrative essay).
+
 ```
-index.html                                  # single-page atlas (no build step)
+index.html                                  # atlas — the maps (no build step)
+descriptives.html                           # per-country distributions & persistence explorer
+dynamics.html                               # "Over time" narrative essay
 assets/{style.css, app.js, manifest.js}     # manifest.js = window.ATLAS (generated)
+assets/{descriptives_app.js, descriptives_manifest.js}   # the descriptives explorer
 figures/
   full/{screening}/{outcome}/{ISO}.png      # titled + colourbar (lightbox)
   thumb/{screening}/{outcome}/{ISO}.png     # clean thumbnails (grid)
   temporal/{full,thumb}/{screening}/{year}/{outcome}/{ISO}.png  # 2.5D 2016 & 2023 panel
 data/countries.json                         # manifest: outcomes, screenings, per-country stats
-scripts/build_maps.py                       # regenerates every figure + manifest
+figures/descriptives/{tab}/{dataset}/{ISO}.png  # descriptives figs (tab: density|wealth|spatial; +temporal/{ISO}.png)
+scripts/build_maps.py                       # regenerates every atlas figure + manifest
+scripts/make_descriptives.py                # regenerates the descriptives figures + manifest
 ```
 
 `{screening}` ∈ `screened`, `all`. `{outcome}` ∈ `wealth`, `poverty_rate`, `extreme_rate`,

@@ -100,6 +100,18 @@ table.scores th{color:var(--ink);font-weight:650}
 table.scores td:last-child,table.scores th:last-child{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;font-weight:600;color:var(--accent-dark)}
 .empty{color:var(--muted);padding:40px 4px}
 
+/* ---- descriptives page ---- */
+.select{appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);
+  font-family:inherit;font-size:.94rem;font-weight:550;padding:8px 30px 8px 12px;border-radius:8px;cursor:pointer;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M0 0l5 6 5-6z' fill='%237b8a95'/></svg>");
+  background-repeat:no-repeat;background-position:right 11px center}
+.select:hover{border-color:var(--accent)}
+.desc-figure{margin:26px 0 64px;background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:var(--shadow);padding:18px;display:flex;flex-direction:column;align-items:center}
+.desc-figure img{max-width:100%;height:auto}
+.desc-cap{margin:12px 0 4px;color:var(--ink-soft);font-size:.92rem;text-align:center}
+.desc-unavailable{margin:48px 12px;color:var(--muted);font-size:1rem;text-align:center;max-width:52ch}
+
 /* ---- period note banner ---- */
 .period-note{margin:12px 0 2px;padding:11px 15px;background:var(--accent-soft);border:1px solid var(--line);
   border-radius:9px;color:var(--ink-soft);font-size:.9rem;line-height:1.5}
