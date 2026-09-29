@@ -49,7 +49,7 @@ a:hover{text-decoration:underline}
 .hero-stats .cap{font-size:.82rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-top:6px}
 
 /* ---- controls ---- */
-.controls{position:sticky;top:60px;z-index:10;background:var(--bg);
+.controls{background:var(--bg);
   padding:22px 0 14px;border-bottom:1px solid var(--line);margin-bottom:26px}
 .metric-tabs{display:flex;gap:8px;flex-wrap:wrap}
 .metric-tabs button{
@@ -185,7 +185,6 @@ table.scores td:last-child,table.scores th:last-child{text-align:right;font-vari
 @media(max-width:640px){
   .hero{padding:44px 0 30px}
   .hero-stats{gap:28px}
-  .controls{top:60px}
   .lb-nav{width:42px;height:42px;font-size:1.5rem}
   .lb-prev{left:6px}.lb-next{right:6px}
   .site-nav{gap:14px}
